@@ -2,76 +2,45 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth ;
-use Validator;
+use App\Http\Requests\AuthRequest;
 use App\Models\User;
-use \stdClass;
-use Illuminate\Support\Facades\Hash;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
 {
-    //
-    public function register(Request $request){
-        $validator = Validator::make($request->all(),[
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|max:255|unique:users',
-            'password' => 'required|string|min:8'
-        ]);
+    public function register(AuthRequest $request): JsonResponse
+    {
+        $user = User::create([...$request->safe()->only(['name', 'email', 'password']), 'role' => 'cliente']);
+        Auth::guard('web')->login($user);
+        $request->session()->regenerate();
 
-        if($validator->fails()){
-            return response()->json($validator->errors());
+        return response()->json(['user' => $user, 'message' => 'Tu cuenta está lista.'], 201);
+    }
+
+    public function login(AuthRequest $request): JsonResponse
+    {
+        if (! Auth::guard('web')->attempt($request->safe()->only(['email', 'password']))) {
+            throw ValidationException::withMessages(['email' => 'El correo o la contraseña no son correctos.']);
         }
+        $request->session()->regenerate();
 
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password)
-        ]);
-
-        $token = $user->createToken('auth_token')->plainTextToken;
-
-        return response()->json([
-            'data' => $user,
-            'access_token' => $token,
-            'token_type' => 'Bearer',
-        ]);
+        return response()->json(['user' => Auth::guard('web')->user()]);
     }
 
-    public function login(Request $request){
-        if(!Auth::attempt($request->only('email', 'password'))){
-            return response()->json(["Unauthorized"], 401);
-        }
-
-        $user = User::where('email', $request['email'])->firstOrFail();
-
-        $token = $user->createToken('auth_token')->plainTextToken;
-        
-        return response()->json([
-            'message' => 'Hi'.$user->name,
-            'access_token' => $token,
-            'token_type' => 'Bearer',
-            'user' => $user,
-        ]);
+    public function me(Request $request): JsonResponse
+    {
+        return response()->json(['user' => $request->user()]);
     }
 
-    public function logout(Request $request){
-        auth()->user()->tokens()->delete();
+    public function logout(Request $request): JsonResponse
+    {
+        Auth::guard('web')->logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
 
-        return [
-            'meesage' => 'You have successfuly logged out and the token was successfully deleted'
-        ];
-    }
-
-    // Función de prueba login
-    public function bienvenida(Request $request){
-        $user = $request->user();
-
-        return response()->json(['meesage' => 'Bienvenido '.$user->name]);
-    }
-
-    // Función de prueba Rol Admin
-    public function bienvenidaAdmin(Request $request){
-        return response()->json(['meesage' => 'Bienvenido Administrador!']);
+        return response()->json(['message' => 'Sesión cerrada.']);
     }
 }

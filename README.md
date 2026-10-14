@@ -1,70 +1,124 @@
-# Tienda Anime
-Desarrollado en Laravel + React con XAMPP y Composer
+# Anime Store
 
-## Entorno de desarrollo
-```bash
-$ nvm --version
-0.39.7
-$ node --version
-v24.18.0
-$ npm --version
-11.16.0
-$ php --version
-PHP 8.2.12 (cli)
-$ composer --version
-2.10.3
+Tienda de anime con frontend en React y una API en Laravel 12. Las vistas están en `react-frontend`; Laravel devuelve JSON y gestiona sesiones, permisos y datos.
+
+## Módulo disponible
+
+- Inicio provisional para visitantes: el catálogo, el carrito y los pedidos quedan para una siguiente etapa.
+- Registro de clientes, login y cierre de sesión.
+- Perfil: edición de nombre, correo y contraseña. Cambiar correo o contraseña requiere la contraseña actual.
+- Administración de usuarios: listado paginado, búsqueda por nombre/correo, filtro por rol, creación, edición y eliminación con confirmación.
+- Roles `admin` y `cliente`: el registro público siempre crea clientes. La API comprueba los permisos y protege la cuenta propia del administrador.
+
+## Requisitos
+
+PHP 8.2 o superior con PDO MySQL y SQLite, Composer, Node.js compatible con Vite 8 (el proyecto usa Node 24) y npm. Para MySQL local puedes usar XAMPP.
+
+## Preparar una copia del repositorio
+
+Desde la raíz del repositorio, en PowerShell:
+
+```powershell
+cd tienda-anime
+composer install
+if (!(Test-Path .env)) { Copy-Item .env.example .env }
 ```
 
-## Crear proyecto Laravel
+Configura la conexión en `tienda-anime/.env` con las credenciales de tu instalación:
 
-```bash
-# Levantar servidor XAMPP y bd
-$ sudo /opt/lampp/lampp start
-
-# Crear proyecto
-$ composer create-project laravel/laravel:^12.0 tienda-anime
-$ cd sistema-torneos
-$ npm install
-
-# Instalar API y Sanctum 
-$ php artisan install:api
-
-# Crear migraciones y modelos
-$ php artisan make:model Product -m
-
-# Crear controladores
-$ php artisan make:controller AuthController
-$ php artisan make:controller ProductController
-
-# Crear middleware
-php artisan make:middleware CheckRole
+```dotenv
+APP_URL=http://127.0.0.1:8000
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=tienda_anime_db
+DB_USERNAME=root
+DB_PASSWORD="TU_CONTRASEÑA_MYSQL"
 ```
 
-El administrador se creo mediente un seeder en sistema-torneos/database/seeders/DatabaseSeeder.php
-```php
- User::create([
-            'name' => 'Administrador',
-            'email' => 'admin@torneos.com',
-            'password' => Hash::make('admin123'),
-            'role' => 'admin',
-        ]);
-```
-Levantamos el proyecto con las migraciones y seeders
-```bash
-# Ejecutar las migraciones
-$ php artisan migrate --seed
+Crea la base `tienda_anime_db` en MySQL si no existe. Genera la clave **solo al preparar un entorno que aún no tiene APP_KEY**:
 
-# Levantar el proyecto (backend)
-$ php artisan serve 
+```powershell
+php artisan key:generate
+php artisan config:clear
+php artisan migrate --seed
 ```
 
-## Crear proyecto React
+El seeder crea el administrador de desarrollo si no existe:
 
-```bash
-$ npx create vite
-$ cd react-frontend
-$ npm i axios bootstrap react-router-dom@6
+- Correo: `admin@tienda.com`
+- Contraseña inicial: `password123`
 
-# Levantar proyecto
-$ npm run dev
+Si esa cuenta ya existe, conserva su contraseña actual. Puedes cambiarla desde **Mi perfil**.
+
+En un proyecto clonado, `composer install` restaura las dependencias que generan `vendor/autoload.php`. Sanctum, las rutas y los modelos ya están incluidos; no hay que repetir `install:api` ni crear otra aplicación.
+
+## Ejecutar en desarrollo
+
+Primera terminal, desde `tienda-anime`:
+
+```powershell
+php artisan serve
 ```
+
+Segunda terminal, desde la raíz del repositorio:
+
+```powershell
+cd react-frontend
+npm ci
+npm run dev
+```
+
+Abre **http://localhost:5173** para usar la aplicación. El puerto 8000 sirve únicamente la API.
+
+| Ruta React | Vista |
+| --- | --- |
+| `/` | Inicio provisional para visitantes |
+| `/login` | Inicio de sesión |
+| `/registro` | Crear cuenta de cliente |
+| `/mi-cuenta` | Perfil del usuario autenticado |
+| `/admin/usuarios` | Gestión de usuarios, solo administradores |
+
+Vite reenvía `/api` y `/sanctum` a `http://127.0.0.1:8000`. Para usar otro puerto del backend, copia `react-frontend/.env.example` como `.env.local` y cambia `LARAVEL_API_URL`.
+
+La sesión utiliza cookies HttpOnly de Sanctum y protección CSRF. No se guardan contraseñas ni tokens en localStorage. Los dominios locales de Vite están configurados en `config/sanctum.php`; si defines `SANCTUM_STATEFUL_DOMAINS`, incluye el host y puerto desde el que abres React.
+
+## API del módulo
+
+| Método y ruta | Acceso |
+| --- | --- |
+| `GET /sanctum/csrf-cookie` | Inicializar protección CSRF |
+| `POST /api/register` | Registro de clientes |
+| `POST /api/login` | Login, con límite de intentos |
+| `GET /api/me` | Consultar sesión |
+| `POST /api/logout` | Cerrar sesión |
+| `PUT /api/profile` | Actualizar perfil propio |
+| `GET /api/users?search=&role=&page=1` | Administrador: consultar usuarios |
+| `POST /api/users` | Administrador: crear |
+| `PUT /api/users/{id}` | Administrador: editar |
+| `DELETE /api/users/{id}` | Administrador: eliminar |
+
+Login y registro esperan peticiones de la SPA con cookies, origen permitido y cabecera X-XSRF-TOKEN. Axios se encarga de enviarlas.
+
+## Verificación
+
+Desde `tienda-anime`:
+
+```powershell
+php artisan test
+```
+
+Las pruebas PHP usan SQLite en memoria, sin tocar MySQL.
+
+Desde `react-frontend`:
+
+```powershell
+npm run build
+npm run test:e2e
+```
+
+Las pruebas de navegador levantan servidores temporales en los puertos 8011 y 4173 y crean una base SQLite independiente en `tests/.runtime`. En Windows usan Microsoft Edge instalado. En otros sistemas instala Chromium con `npx playwright install chromium`. Puedes elegir otro navegador compatible mediante `PLAYWRIGHT_CHANNEL`.
+
+Para publicar el frontend compilado, configura el servidor web para resolver las rutas de React hacia `index.html` y reenviar `/api` y `/sanctum` a Laravel. El proxy de Vite es solo para desarrollo y la previsualización local.
+
+Referencias: [sesiones SPA de Sanctum](https://laravel.com/docs/12.x/sanctum#spa-authentication), [proxy de Vite](https://vite.dev/config/server-options.html#server-proxy).
