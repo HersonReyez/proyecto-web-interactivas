@@ -7,6 +7,7 @@ export default defineConfig(({ mode }) => {
   const proxy = {
     '/api': { target, changeOrigin: true },
     '/sanctum': { target, changeOrigin: true },
+    '/storage': { target, changeOrigin: true },
   }
   return {
     plugins: [react()],

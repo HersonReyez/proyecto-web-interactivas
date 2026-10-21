@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Product;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class ProductController extends Controller
 {
@@ -25,6 +27,14 @@ class ProductController extends Controller
         $product->name = $request->name;
         $product->description = $request->description;
         $product->price = $request->price;
+        $product->stock = $request->stock;
+
+        // Lógica para guardar la imagen
+        if ($request->hasFile('image')) {
+            // Guarda en storage/app/public/products
+            $path = $request->file('image')->store('products', 'public');
+            $product->image_path = $path;
+        }
 
         $product->save();
         return $product;
@@ -36,6 +46,17 @@ class ProductController extends Controller
         $product->name = $request->name;
         $product->description = $request->description;
         $product->price = $request->price;
+        $product->stock = $request->stock;
+
+        // Actualizar imagen si se envía una nueva
+        if ($request->hasFile('image')) {
+            // Eliminar la imagen anterior si existe
+            if ($product->image_path) {
+                Storage::disk('public')->delete($product->image_path);
+            }
+            $path = $request->file('image')->store('products', 'public');
+            $product->image_path = $path;
+        }
 
         $product->save();
         return $product;

@@ -10,6 +10,16 @@ export const api = axios.create({
 
 export const csrf = () => axios.get('/sanctum/csrf-cookie', { withCredentials: true, timeout: 15000 })
 
+const storageBase = (import.meta.env.VITE_STORAGE_URL || '').replace(/\/+$/, '')
+
+export function productImageUrl(imagePath) {
+  if (!imagePath) return ''
+  if (/^https?:\/\//i.test(imagePath)) return imagePath
+  const path = imagePath.replace(/^\/+/, '')
+  const storagePath = path.startsWith('storage/') ? `/${path}` : `/storage/${path}`
+  return storageBase + storagePath
+}
+
 export function errorMessage(error) {
   const status = error.response?.status
   if (!error.response) return 'No pudimos conectar. Comprueba tu conexión e inténtalo de nuevo.'

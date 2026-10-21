@@ -4,10 +4,11 @@ Tienda de anime con frontend en React y una API en Laravel 12. Las vistas están
 
 ## Módulo disponible
 
-- Inicio provisional para visitantes: el catálogo, el carrito y los pedidos quedan para una siguiente etapa.
+- Catálogo público de productos con precio, descripción, existencias e imagen.
 - Registro de clientes, login y cierre de sesión.
 - Perfil: edición de nombre, correo y contraseña. Cambiar correo o contraseña requiere la contraseña actual.
 - Administración de usuarios: listado paginado, búsqueda por nombre/correo, filtro por rol, creación, edición y eliminación con confirmación.
+- Administración de productos: búsqueda, creación, edición de datos e imagen, inventario y eliminación con confirmación.
 - Roles `admin` y `cliente`: el registro público siempre crea clientes. La API comprueba los permisos y protege la cuenta propia del administrador.
 
 ## Requisitos
@@ -73,13 +74,14 @@ Abre **http://localhost:5173** para usar la aplicación. El puerto 8000 sirve ú
 
 | Ruta React | Vista |
 | --- | --- |
-| `/` | Inicio provisional para visitantes |
+| `/` | Inicio y catálogo público de productos |
 | `/login` | Inicio de sesión |
 | `/registro` | Crear cuenta de cliente |
 | `/mi-cuenta` | Perfil del usuario autenticado |
 | `/admin/usuarios` | Gestión de usuarios, solo administradores |
+| `/admin/productos` | Gestión de productos, solo administradores |
 
-Vite reenvía `/api` y `/sanctum` a `http://127.0.0.1:8000`. Para usar otro puerto del backend, copia `react-frontend/.env.example` como `.env.local` y cambia `LARAVEL_API_URL`.
+Vite reenvía `/api`, `/sanctum` y `/storage` a `http://127.0.0.1:8000`. Para usar otro puerto del backend, copia `react-frontend/.env.example` como `.env.local` y cambia `LARAVEL_API_URL`. Si frontend y backend se sirven desde dominios distintos, configura `VITE_STORAGE_URL` con el origen de Laravel para cargar las imágenes.
 
 La sesión utiliza cookies HttpOnly de Sanctum y protección CSRF. No se guardan contraseñas ni tokens en localStorage. Los dominios locales de Vite están configurados en `config/sanctum.php`; si defines `SANCTUM_STATEFUL_DOMAINS`, incluye el host y puerto desde el que abres React.
 
@@ -93,6 +95,11 @@ La sesión utiliza cookies HttpOnly de Sanctum y protección CSRF. No se guardan
 | `GET /api/me` | Consultar sesión |
 | `POST /api/logout` | Cerrar sesión |
 | `PUT /api/profile` | Actualizar perfil propio |
+| `GET /api/products` | Consultar catálogo público |
+| `GET /api/product/{id}` | Consultar un producto |
+| `POST /api/product` | Administrador: crear producto con formulario multipart |
+| `PUT /api/product/{id}` | Administrador: actualizar producto |
+| `DELETE /api/product/{id}` | Administrador: eliminar producto |
 | `GET /api/users?search=&role=&page=1` | Administrador: consultar usuarios |
 | `POST /api/users` | Administrador: crear |
 | `PUT /api/users/{id}` | Administrador: editar |
@@ -119,6 +126,6 @@ npm run test:e2e
 
 Las pruebas de navegador levantan servidores temporales en los puertos 8011 y 4173 y crean una base SQLite independiente en `tests/.runtime`. En Windows usan Microsoft Edge instalado. En otros sistemas instala Chromium con `npx playwright install chromium`. Puedes elegir otro navegador compatible mediante `PLAYWRIGHT_CHANNEL`.
 
-Para publicar el frontend compilado, configura el servidor web para resolver las rutas de React hacia `index.html` y reenviar `/api` y `/sanctum` a Laravel. El proxy de Vite es solo para desarrollo y la previsualización local.
+Para publicar el frontend compilado, configura el servidor web para resolver las rutas de React hacia `index.html` y reenviar `/api`, `/sanctum` y `/storage` a Laravel. El proxy de Vite es solo para desarrollo y la previsualización local.
 
 Referencias: [sesiones SPA de Sanctum](https://laravel.com/docs/12.x/sanctum#spa-authentication), [proxy de Vite](https://vite.dev/config/server-options.html#server-proxy).

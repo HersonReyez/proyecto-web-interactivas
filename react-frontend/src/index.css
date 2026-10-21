@@ -27,10 +27,11 @@ button, input, select { transition: background .15s, border-color .15s, box-shad
 h1, h2, h3, p { margin: 0; }
 h1, h2, h3 { font-family: 'Manrope', 'Segoe UI', sans-serif; font-weight: 700; color: var(--ink); }
 fieldset { min-width: 0; border: 0; padding: 0; margin: 0; }
-input, select { border: 1px solid #dcdde1; background: #fff; border-radius: 8px; color: var(--ink); min-height: 46px; padding: 11px 13px; width: 100%; }
+input, select, textarea { border: 1px solid #dcdde1; background: #fff; border-radius: 8px; color: var(--ink); min-height: 46px; padding: 11px 13px; width: 100%; }
+textarea { min-height: 110px; resize: vertical; line-height: 1.6; }
 input::placeholder { color: #9699a0; }
-input:focus, select:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px #a93e4b12; }
-input[aria-invalid="true"], select[aria-invalid="true"] { border-color: #b53344; }
-input:disabled, select:disabled { background: #f6f5f3; }
+input:focus, select:focus, textarea:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px #a93e4b12; }
+input[aria-invalid="true"], select[aria-invalid="true"], textarea[aria-invalid="true"] { border-color: #b53344; }
+input:disabled, select:disabled, textarea:disabled { background: #f6f5f3; }
 ::selection { color: #fff; background: var(--accent); }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }

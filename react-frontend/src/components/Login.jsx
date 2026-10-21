@@ -15,7 +15,7 @@ export default function Login() {
     await form.submit(async values => {
       const user = await authenticate('/login', values)
       const destination = location.state?.from
-      navigate(destination?.startsWith('/') && !destination.startsWith('//') && (user.role === 'admin' || !destination.startsWith('/admin')) ? destination : user.role === 'admin' ? '/admin/usuarios' : '/mi-cuenta', { replace: true })
+      navigate(destination?.startsWith('/') && !destination.startsWith('//') && (user.role === 'admin' || !destination.startsWith('/admin')) ? destination : user.role === 'admin' ? '/admin/productos' : '/mi-cuenta', { replace: true })
     })
   }
 
