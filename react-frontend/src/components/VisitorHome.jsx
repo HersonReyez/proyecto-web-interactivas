@@ -8,7 +8,7 @@ export default function VisitorHome() {
   return <div className="visitor-page">
     <header className="public-header">
       <Link className="brand" to="/"><span className="brand-mark"><Icon name="star" /></span>anime<span className="brand-thin">store</span><span className="brand-dot">.</span></Link>
-      <nav aria-label="Navegación principal">{user ? <Link className="button primary small" to={user.role === 'admin' ? '/admin/productos' : '/mi-cuenta'}>{user.role === 'admin' ? 'Administrar tienda' : 'Mi espacio'} <Icon name="arrow" /></Link> : <><Link className="text-link" to="/login">Iniciar sesión</Link><Link className="button primary small" to="/registro">Crear cuenta <Icon name="arrow" /></Link></>}</nav>
+      <nav aria-label="Navegación principal">{user ? <>{user.role === 'cliente' && <Link className="button secondary small" to="/carrito" aria-label="Mi carrito"><Icon name="shopping-cart" />Mi carrito</Link>}<Link className="button primary small" to={user.role === 'admin' ? '/admin/productos' : '/mi-cuenta'}>{user.role === 'admin' ? 'Administrar tienda' : 'Mi espacio'} <Icon name="arrow" /></Link></> : <><Link className="text-link" to="/login">Iniciar sesión</Link><Link className="button primary small" to="/registro">Crear cuenta <Icon name="arrow" /></Link></>}</nav>
     </header>
     <main className="visitor-main">
       <div className="launch-label"><span /> FIGURAS Y COLECCIONABLES PARA FANS</div>
@@ -25,3 +25,4 @@ export default function VisitorHome() {
     <footer className="public-footer"><span>Anime Store © {new Date().getFullYear()}</span><span>Una comunidad. Infinitas historias.</span></footer>
   </div>
 }
+

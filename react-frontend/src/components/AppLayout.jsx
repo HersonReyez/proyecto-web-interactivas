@@ -30,6 +30,7 @@ export default function AppLayout() {
       <nav className="side-nav" aria-label="Mi espacio">
         {user.role === 'admin' && <NavLink to="/admin/productos"><Icon name="store" />Productos</NavLink>}
         {user.role === 'admin' && <NavLink to="/admin/usuarios"><Icon name="users" />Usuarios <span className="nav-dot" /></NavLink>}
+        {user.role === 'cliente' && <NavLink to="/carrito"><Icon name="shopping-cart" />Mi carrito</NavLink>}
         <NavLink to="/mi-cuenta"><Icon name="user" />Mi perfil</NavLink>
         <Link to="/"><Icon name="store" />Inicio de la tienda <Icon name="arrow" size={16} /></Link>
       </nav>
