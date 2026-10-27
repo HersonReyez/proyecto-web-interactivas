@@ -10,6 +10,7 @@ export function Icon({ name, size = 20, ...props }) {
     'shopping-cart': 'M3 3h2l2.4 12.4a2 2 0 0 0 2 1.6h8.8a2 2 0 0 0 2-1.6L22 8H6m4 13a1 1 0 1 0 0-2 1 1 0 0 0 0 2m8 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2',
     shield: 'M12 3 3 7v5c0 5 9 9 9 9s9-4 9-9V7l-9-4m-4 9 3 3 5-5',
     plus: 'M12 5v14M5 12h14',
+    minus: 'M5 12h14',
     search: 'm21 21-5-5M18 10a8 8 0 1 1-16 0 8 8 0 0 1 16 0',
     edit: 'm16 3 5 5-12 12H4v-5L16 3m-3 3 5 5',
     trash: 'M3 6h18M9 6V3h6v3M5 6l1 15h12l1-15M10 10v7m4-7v7',

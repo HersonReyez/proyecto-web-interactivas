@@ -241,6 +241,8 @@ tbody tr:hover { background: #fdfcfb; }
 .cart-item-meta strong { color: #666a73; font-weight: 600; }
 .cart-item-total { display: flex; flex-direction: column; align-items: flex-end; gap: 8px; }
 .cart-item-total > strong { color: var(--accent); font-size: 13px; white-space: nowrap; }
+.cart-item-actions { display: flex; align-items: center; gap: 3px; }
+.cart-item-actions .icon-button:disabled { opacity: .45; cursor: wait; }
 .cart-summary { padding: 23px; }
 .cart-summary .eyebrow { margin-bottom: 7px; }
 .cart-summary h2 { margin-bottom: 20px; font-size: 18px; }
