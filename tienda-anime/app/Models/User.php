@@ -48,4 +48,12 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    // Relación: Un usuario tiene muchos carritos (productos)
+    public function carts()
+    {
+        return $this->belongsToMany(Product::class, 'carts')
+            ->withPivot('quantity')
+            ->withTimestamps();
+    }
 }
