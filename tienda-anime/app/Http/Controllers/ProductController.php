@@ -28,6 +28,9 @@ class ProductController extends Controller
         $product->description = $request->description;
         $product->price = $request->price;
         $product->stock = $request->stock;
+        $product->anime_id = $request->anime_id ?: null;
+        $product->anime_title = $request->anime_title ?: null;
+        $product->anime_image_url = $request->anime_image_url ?: null;
 
         // Lógica para guardar la imagen
         if ($request->hasFile('image')) {
@@ -47,6 +50,16 @@ class ProductController extends Controller
         $product->description = $request->description;
         $product->price = $request->price;
         $product->stock = $request->stock;
+
+        if ($request->has('anime_id')) {
+            $product->anime_id = $request->anime_id ?: null;
+        }
+        if ($request->has('anime_title')) {
+            $product->anime_title = $request->anime_title ?: null;
+        }
+        if ($request->has('anime_image_url')) {
+            $product->anime_image_url = $request->anime_image_url ?: null;
+        }
 
         // Actualizar imagen si se envía una nueva
         if ($request->hasFile('image')) {

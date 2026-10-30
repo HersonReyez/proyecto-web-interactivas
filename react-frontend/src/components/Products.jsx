@@ -36,7 +36,7 @@ export default function Products() {
   const filteredProducts = useMemo(() => {
     const term = search.trim().toLocaleLowerCase('es-MX')
     if (!term) return products
-    return products.filter(product => `${product.name} ${product.description}`.toLocaleLowerCase('es-MX').includes(term))
+    return products.filter(product => `${product.name} ${product.description} ${product.anime_title || ''}`.toLocaleLowerCase('es-MX').includes(term))
   }, [products, search])
 
   function saved(message) {
@@ -71,13 +71,14 @@ export default function Products() {
     <Notice type="success">{success}</Notice>
     <section className="panel products-panel" aria-label="Listado de productos">
       <div className="table-toolbar"><div><h2>Inventario</h2><p>Administra nombres, precios, existencias e imágenes.</p></div><span className="count-label">{filteredProducts.length} {filteredProducts.length === 1 ? 'resultado' : 'resultados'}</span></div>
-      <div className="filters"><div className="search-input"><Icon name="search" /><input type="search" aria-label="Buscar productos" placeholder="Buscar por nombre o descripción…" value={search} maxLength={255} onChange={event => setSearch(event.target.value)} /></div></div>
+      <div className="filters"><div className="search-input"><Icon name="search" /><input type="search" aria-label="Buscar productos" placeholder="Buscar por nombre, descripción o anime…" value={search} maxLength={255} onChange={event => setSearch(event.target.value)} /></div></div>
       {error ? <div className="table-state"><Notice>{error}</Notice><button className="button secondary" onClick={() => setRevision(value => value + 1)}>Reintentar</button></div>
         : loading ? <Loading text="Cargando productos…" />
-          : filteredProducts.length ? <div className="table-scroll"><table><thead><tr><th>PRODUCTO</th><th>PRECIO</th><th>EXISTENCIAS</th><th>ACTUALIZADO</th><th className="actions-heading">ACCIONES</th></tr></thead><tbody>{filteredProducts.map(product => {
+          : filteredProducts.length ? <div className="table-scroll"><table><thead><tr><th>PRODUCTO</th><th>ANIME</th><th>PRECIO</th><th>EXISTENCIAS</th><th>ACTUALIZADO</th><th className="actions-heading">ACCIONES</th></tr></thead><tbody>{filteredProducts.map(product => {
             const image = productImageUrl(product.image_path)
             return <tr key={product.id}>
               <td><div className="table-user product-table-user"><span className="product-thumbnail">{image ? <img src={image} alt="" loading="lazy" onError={event => { event.currentTarget.style.display = 'none' }} /> : <Icon name="box" size={18} />}</span><div><strong>{product.name}</strong><span>{product.description}</span></div></div></td>
+              <td><span className="role-badge">{product.anime_title || 'Sin anime'}</span></td>
               <td className="product-price-cell">{money.format(Number(product.price) || 0)}</td>
               <td><span className={'inventory-badge ' + (Number(product.stock) > 0 ? '' : 'empty')}>{product.stock} {Number(product.stock) === 1 ? 'unidad' : 'unidades'}</span></td>
               <td className="date-cell">{product.updated_at ? new Date(product.updated_at).toLocaleDateString('es-MX', { day: '2-digit', month: 'short', year: 'numeric' }) : '—'}</td>

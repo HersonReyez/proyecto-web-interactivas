@@ -192,8 +192,8 @@ tbody tr:hover { background: #fdfcfb; }
 .catalog-heading h2 > span { color: var(--accent); }
 .catalog-heading p { color: var(--muted); font-size: 12px; }
 .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 18px; }
-.product-card { min-width: 0; overflow: hidden; background: #fff; border: 1px solid var(--line); border-radius: 11px; transition: transform .18s ease, box-shadow .18s ease; }
-.product-card:hover { transform: translateY(-3px); box-shadow: 0 12px 28px #252b3510; }
+.product-card { position: relative; min-width: 0; overflow: visible; background: #fff; border: 1px solid var(--line); border-radius: 11px; transition: transform .18s ease, box-shadow .18s ease; }
+.product-card:hover { transform: translateY(-3px); box-shadow: 0 12px 28px #252b3510; z-index: 50; }
 .product-card-image { position: relative; overflow: hidden; aspect-ratio: 1 / .88; background: #f1eee8; }
 .product-card-image > img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
 .product-art-placeholder { position: absolute; inset: 0; display: grid; place-items: center; color: #b6a99a; background: radial-gradient(circle at 50% 40%, #fff9 0 13%, transparent 14%), linear-gradient(145deg, #f0ece5, #e9e5df); }
@@ -364,4 +364,367 @@ tbody tr:hover { background: #fdfcfb; }
   .visitor-copy h1 { font-size: 37px; }
   .page-heading { flex-direction: column; }
   .page-heading .button { align-self: flex-start; }
+}
+
+
+/* Anime Badge on Product Card */
+.product-anime-badge {
+  position: absolute;
+  right: 13px;
+  bottom: 13px;
+  max-width: 75%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 9px;
+  border-radius: 6px;
+  background: rgba(36, 39, 49, 0.85);
+  backdrop-filter: blur(4px);
+  color: #fff;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+.product-anime-badge:hover {
+  background: var(--accent);
+}
+
+/* Anime Filter Bar */
+.catalog-anime-filter-bar {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 24px;
+  padding: 12px 16px;
+  background: #fbfaf8;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  flex-wrap: wrap;
+}
+.catalog-anime-filter-bar .filter-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #646873;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+.anime-filter-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.anime-chip {
+  padding: 6px 13px;
+  font-size: 11px;
+  font-weight: 600;
+  border-radius: 20px;
+  border: 1px solid #e1ded9;
+  background: #fff;
+  color: #555964;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.anime-chip:hover {
+  border-color: #baa9a1;
+  color: #242731;
+}
+.anime-chip.active {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+}
+
+/* Floating Anime Hover Card */
+.product-hover-anchor {
+  position: absolute;
+  top: 0;
+  left: calc(100% + 12px);
+  z-index: 9999;
+  pointer-events: none;
+  animation: fadeInHover 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+@keyframes fadeInHover {
+  from { opacity: 0; transform: translateX(-6px) scale(0.97); }
+  to { opacity: 1; transform: translateX(0) scale(1); }
+}
+.anime-hover-card {
+  width: 290px;
+  background: #232731;
+  color: #f1f3f7;
+  border-radius: 12px;
+  padding: 15px;
+  box-shadow: 0 16px 38px rgba(0, 0, 0, 0.38), 0 0 0 1px rgba(255, 255, 255, 0.08);
+}
+.anime-card-header {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  margin-bottom: 11px;
+}
+.anime-card-thumb {
+  width: 58px;
+  height: 82px;
+  object-fit: cover;
+  border-radius: 6px;
+  flex-shrink: 0;
+  background: #373c49;
+}
+.anime-card-header-info {
+  flex: 1;
+  min-width: 0;
+}
+.anime-card-tag {
+  font-size: 8px;
+  letter-spacing: 1.2px;
+  font-weight: 800;
+  color: var(--accent);
+  display: block;
+  margin-bottom: 3px;
+}
+.anime-card-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: #fff;
+  line-height: 1.3;
+  margin: 0 0 2px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+.anime-card-jp {
+  font-size: 10px;
+  color: #9ea4b3;
+  margin: 0 0 6px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.anime-card-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+.anime-meta-badge {
+  font-size: 9px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: #343a49;
+  color: #cfd4e0;
+}
+.anime-meta-badge.score {
+  background: #463b2f;
+  color: #f5c368;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-weight: 700;
+}
+.anime-meta-badge.status {
+  background: #2b3e34;
+  color: #8edba3;
+}
+.anime-card-genres {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-bottom: 10px;
+  padding-bottom: 9px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+.anime-genre-pill {
+  font-size: 8.5px;
+  padding: 2px 7px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.08);
+  color: #b7becd;
+}
+.anime-card-body {
+  font-size: 10.5px;
+  line-height: 1.55;
+  color: #b5bbca;
+}
+.anime-card-synopsis {
+  display: -webkit-box;
+  -webkit-line-clamp: 5;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  margin: 0;
+}
+.anime-card-loading {
+  font-size: 10px;
+  color: #8c93a4;
+  font-style: italic;
+}
+
+/* Selector en Formulario de Producto */
+.anime-selector-field {
+  position: relative;
+}
+.anime-search-container {
+  position: relative;
+}
+.anime-searching-indicator {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 10px;
+  color: var(--accent);
+}
+.anime-autocomplete-dropdown {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  max-height: 230px;
+  overflow-y: auto;
+  z-index: 50;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+.anime-autocomplete-item {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 8px 12px;
+  cursor: pointer;
+  border-bottom: 1px solid #f2f0ec;
+  transition: background 0.15s ease;
+}
+.anime-autocomplete-item:last-child {
+  border-bottom: 0;
+}
+.anime-autocomplete-item:hover {
+  background: #f7f5f2;
+}
+.anime-autocomplete-item img {
+  width: 32px;
+  height: 44px;
+  object-fit: cover;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+.anime-autocomplete-item strong {
+  display: block;
+  font-size: 12px;
+  color: var(--ink);
+}
+.anime-autocomplete-item small {
+  display: block;
+  font-size: 10px;
+  color: var(--muted);
+}
+.selected-anime-badge {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 9px 13px;
+  background: #f8f6f2;
+  border: 1px solid #e7e3dc;
+  border-radius: 8px;
+}
+.selected-anime-thumb {
+  width: 34px;
+  height: 48px;
+  object-fit: cover;
+  border-radius: 4px;
+}
+.selected-anime-info {
+  flex: 1;
+}
+.selected-anime-info strong {
+  display: block;
+  font-size: 12px;
+  color: var(--ink);
+}
+.selected-anime-info small {
+  display: block;
+  font-size: 10px;
+  color: var(--muted);
+}
+
+@media (max-width: 900px) {
+  .product-hover-anchor {
+    position: static;
+    margin-top: 10px;
+  }
+  .anime-hover-card {
+    width: 100%;
+  }
+}
+
+.anime-search-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+}
+.anime-search-row input {
+  flex: 1;
+  min-width: 0;
+}
+.anime-search-row .button {
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+/* Search Row & Input wrap in Anime Selector */
+.anime-search-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+}
+.anime-input-wrap {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+}
+.anime-input-wrap input {
+  width: 100%;
+  padding-right: 85px !important;
+}
+.anime-input-wrap .anime-searching-indicator {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--accent);
+  pointer-events: none;
+}
+.anime-search-row .button {
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+/* Placement variations for AnimeHoverCard */
+.anime-hover-card.placement-left {
+  position: absolute;
+  top: 0;
+  right: calc(100% + 12px);
+}
+
+
+/* Dynamic Placement Anchors for Anime Card */
+.product-hover-anchor.anchor-right {
+  left: calc(100% + 14px) !important;
+  right: auto !important;
+}
+.product-hover-anchor.anchor-left {
+  left: auto !important;
+  right: calc(100% + 14px) !important;
 }
