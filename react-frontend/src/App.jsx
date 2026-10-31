@@ -7,6 +7,8 @@ import Profile from './components/Profile'
 import Users from './components/Users'
 import Products from './components/Products'
 import Cart from './components/Cart'
+import UserOrders from './components/UserOrders'
+import AdminOrders from './components/AdminOrders'
 import VisitorHome from './components/VisitorHome'
 import { Loading, Notice } from './components/ui'
 import './App.css'
@@ -25,14 +27,43 @@ function Protected({ admin = false, customer = false }) {
 function GuestOnly() {
   const { user, loading } = useAuth()
   if (loading) return <Loading text="Comprobando tu sesión…" />
-  return user ? <Navigate to={user.role === 'admin' ? '/admin/productos' : '/mi-cuenta'} replace /> : <Outlet />
+  return user ? <Navigate to={user.role === 'admin' ? '/admin/dashboard' : '/mi-cuenta'} replace /> : <Outlet />
 }
 
 export default function App() {
-  return <BrowserRouter><AuthProvider><Routes>
-    <Route path="/" element={<VisitorHome />} />
-    <Route element={<GuestOnly />}><Route path="/login" element={<Login />} /><Route path="/registro" element={<Register />} /><Route path="/register" element={<Navigate to="/registro" replace />} /></Route>
-    <Route element={<Protected />}><Route element={<AppLayout />}><Route path="/mi-cuenta" element={<Profile />} /><Route element={<Protected customer />}><Route path="/carrito" element={<Cart />} /></Route><Route element={<Protected admin />}><Route path="/admin/usuarios" element={<Users />} /><Route path="/admin/productos" element={<Products />} /></Route></Route></Route>
-    <Route path="*" element={<div className="standalone-state"><span className="eyebrow">404 / CAPÍTULO NO ENCONTRADO</span><h1>Esta página no existe.</h1><Link className="button primary" to="/">Volver al inicio</Link></div>} />
-  </Routes></AuthProvider></BrowserRouter>
+  return (
+    <BrowserRouter>
+      <AuthProvider>
+        <Routes>
+          <Route path="/" element={<VisitorHome />} />
+          <Route element={<GuestOnly />}>
+            <Route path="/login" element={<Login />} />
+            <Route path="/registro" element={<Register />} />
+            <Route path="/register" element={<Navigate to="/registro" replace />} />
+          </Route>
+          
+          <Route element={<Protected />}>
+            <Route element={<AppLayout />}>
+              <Route path="/mi-cuenta" element={<Profile />} />
+              
+              {/* Rutas exclusivas para Clientes */}
+              <Route element={<Protected customer />}>
+                <Route path="/carrito" element={<Cart />} />
+                <Route path="/mis-compras" element={<UserOrders />} />
+              </Route>
+
+              {/* Rutas exclusivas para Administradores */}
+              <Route element={<Protected admin />}>
+                <Route path="/admin/dashboard" element={<AdminOrders />} />
+                <Route path="/admin/productos" element={<Products />} />
+                <Route path="/admin/usuarios" element={<Users />} />
+              </Route>
+            </Route>
+          </Route>
+
+          <Route path="*" element={<div className="standalone-state"><span className="eyebrow">404 / CAPÍTULO NO ENCONTRADO</span><h1>Esta página no existe.</h1><Link className="button primary" to="/">Volver al inicio</Link></div>} />
+        </Routes>
+      </AuthProvider>
+    </BrowserRouter>
+  )
 }

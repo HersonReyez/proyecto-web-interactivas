@@ -1,10 +1,11 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\CartController;
+use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UserController;
-use App\Http\Controllers\CartController;
 use Illuminate\Support\Facades\Route;
 
 ######################
@@ -26,13 +27,19 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('logout', [AuthController::class, 'logout']);
     Route::put('profile', [ProfileController::class, 'update']);
 
+    // Carrito
     Route::get('cart', [CartController::class, 'index']);
     Route::post('cart/{productId}', [CartController::class, 'store']);
     Route::delete('cart/{productId}/unit', [CartController::class, 'removeOne']);
     Route::delete('cart/{productId}', [CartController::class, 'destroy']);
 
+    // Órdenes / Ventas
+    Route::post('checkout', [OrderController::class, 'checkout']);
+    Route::get('my-orders', [OrderController::class, 'userOrders']);
+    Route::get('orders/{id}', [OrderController::class, 'show']);
+
     ######################
-    # RUTAS USUARIOS
+    # RUTAS ADMINISTRADOR
     ######################
 
     Route::middleware('admin')->group(function () {
@@ -40,5 +47,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('product', [ProductController::class, 'store']);
         Route::put('product/{id}', [ProductController::class, 'update']);
         Route::delete('product/{id}', [ProductController::class, 'destroy']);
+
+        // Dashboard y Trazabilidad de compras
+        Route::get('admin/orders', [OrderController::class, 'adminOrders']);
     });
 });

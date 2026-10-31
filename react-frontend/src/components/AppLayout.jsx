@@ -28,9 +28,11 @@ export default function AppLayout() {
       <Link className="brand" to="/"><span className="brand-mark"><Icon name="star" /></span>anime<span className="brand-thin">store</span><span className="brand-dot">.</span></Link>
       <div className="sidebar-section-label">{user.role === 'admin' ? 'ADMINISTRACIÓN' : 'MI ESPACIO'}</div>
       <nav className="side-nav" aria-label="Mi espacio">
+        {user.role === 'admin' && <NavLink to="/admin/dashboard"><Icon name="shield" />Dashboard Ventas <span className="nav-dot" /></NavLink>}
         {user.role === 'admin' && <NavLink to="/admin/productos"><Icon name="store" />Productos</NavLink>}
-        {user.role === 'admin' && <NavLink to="/admin/usuarios"><Icon name="users" />Usuarios <span className="nav-dot" /></NavLink>}
+        {user.role === 'admin' && <NavLink to="/admin/usuarios"><Icon name="users" />Usuarios</NavLink>}
         {user.role === 'cliente' && <NavLink to="/carrito"><Icon name="shopping-cart" />Mi carrito</NavLink>}
+        {user.role === 'cliente' && <NavLink to="/mis-compras"><Icon name="box" />Mis compras</NavLink>}
         <NavLink to="/mi-cuenta"><Icon name="user" />Mi perfil</NavLink>
         <Link to="/"><Icon name="store" />Inicio de la tienda <Icon name="arrow" size={16} /></Link>
       </nav>

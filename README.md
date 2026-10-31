@@ -16,6 +16,51 @@ Tienda de anime con frontend en React y una API en Laravel 12. Las vistas están
 - Administración de usuarios: listado paginado, búsqueda por nombre/correo, filtro por rol, creación, edición y eliminación con confirmación.
 - Administración de productos: búsqueda, vinculación con anime, creación, edición de datos e imagen, inventario y eliminación con confirmación.
 - Roles `admin` y `cliente`: el registro público siempre crea clientes. La API comprueba los permisos y protege la cuenta propia del administrador.
+- **Simulación de Compras**:
+  - Modal de confirmación de pago directamente desde el carrito, con selección de método de pago (tarjeta, efectivo, transferencia) y notas opcionales.
+  - Generación automática de número de folio único por orden con formato `ORD-AAAAMMDD-XXXX`.
+  - Los artículos de cada orden se guardan como *snapshot* (nombre, precio, anime, imagen), preservando la trazabilidad histórica aunque el producto sea editado o eliminado posteriormente.
+- **Historial de compras del cliente** en `/mis-compras`: vista paginada con desglose por artículo, serie/anime, precio unitario y subtotal.
+- **Dashboard de trazabilidad para administradores** en `/admin/dashboard`: métricas globales en tiempo real (ventas totales, órdenes, unidades vendidas, clientes únicos) y tabla de auditoría de todas las transacciones con búsqueda y filtro por estado.
+
+## Simulación de Compras y Trazabilidad
+
+El módulo de órdenes simula un flujo de compra completo sin pasarela de pago real:
+
+### Flujo de compra
+
+1. El cliente agrega productos al carrito (el stock se reserva en este momento).
+2. Desde el carrito, presiona **Confirmar compra**: se abre un modal para elegir método de pago (tarjeta de crédito / débito, efectivo o transferencia bancaria) y agregar notas opcionales.
+3. Al confirmar, el backend genera la orden con un folio único (`ORD-AAAAMMDD-XXXX`), almacena una instantánea (*snapshot*) de cada artículo comprado y vacía el carrito.
+4. Se muestra una tarjeta de confirmación con el número de folio y el resumen de la compra.
+
+> **Nota**: no se integra ningún procesador de pagos real; todos los pagos son simulados con fines de demostración.
+
+### Patrón de snapshot en `order_items`
+
+Cada ítem de orden guarda en base de datos los valores del momento de la compra: `product_name`, `price`, `anime_title` e `image_path`. Esto garantiza que el historial sea inmutable e independiente de cambios futuros en el catálogo.
+
+### Métricas del dashboard (administrador)
+
+El endpoint `GET /api/admin/orders` devuelve el objeto `stats` con las siguientes claves:
+
+| Clave | Descripción |
+| --- | --- |
+| `total_sales` | Suma de todos los ingresos registrados |
+| `total_orders` | Número total de órdenes |
+| `total_units_sold` | Unidades vendidas en todas las órdenes |
+| `unique_customers` | Clientes distintos que han realizado al menos una compra |
+
+### Tablas de base de datos creadas
+
+La migración `create_orders_and_order_items_tables` añade dos tablas:
+
+- **`orders`**: `id`, `order_number`, `user_id`, `total`, `status`, `payment_method`, `notes`, `timestamps`.
+- **`order_items`**: `id`, `order_id`, `product_id` (nullable), `product_name`, `price`, `quantity`, `anime_title`, `image_path`, `timestamps`.
+
+No se requieren pasos de configuración adicionales; `php artisan migrate` crea estas tablas automáticamente.
+
+---
 
 ## Integración de APIs de Anime (Jikan y Kitsu)
 
@@ -108,6 +153,8 @@ Abre **http://localhost:5173** para usar la aplicación. El puerto 8000 sirve ú
 | `/mi-cuenta` | Perfil del usuario autenticado |
 | `/admin/usuarios` | Gestión de usuarios, solo administradores |
 | `/admin/productos` | Gestión de productos y vinculación con catálogo de anime |
+| `/mis-compras` | Historial de compras del usuario autenticado (clientes) |
+| `/admin/dashboard` | Dashboard de ventas y trazabilidad global (administradores) |
 
 Vite reenvía `/api`, `/sanctum` y `/storage` a `http://127.0.0.1:8000`. Para usar otro puerto del backend, copia `react-frontend/.env.example` como `.env.local` y cambia `LARAVEL_API_URL`. Si frontend y backend se sirven desde dominios distintos, configura `VITE_STORAGE_URL` con el origen de Laravel para cargar las imágenes.
 
@@ -136,6 +183,10 @@ La sesión utiliza cookies HttpOnly de Sanctum y protección CSRF. No se guardan
 | `POST /api/users` | Administrador: crear usuario |
 | `PUT /api/users/{id}` | Administrador: editar usuario |
 | `DELETE /api/users/{id}` | Administrador: eliminar usuario |
+| `POST /api/checkout` | Cliente: confirmar compra y vaciar carrito |
+| `GET /api/my-orders` | Cliente: historial paginado de ordenes propias |
+| `GET /api/orders/{id}` | Cliente/Admin: detalle de una orden especifica |
+| `GET /api/admin/orders?search=&status=&page=1` | Administrador: trazabilidad global con metricas |
 
 Login y registro esperan peticiones de la SPA con cookies, origen permitido y cabecera X-XSRF-TOKEN. Axios se encarga de enviarlas.
 
@@ -160,4 +211,4 @@ Las pruebas de navegador levantan servidores temporales en los puertos 8011 y 41
 
 Para publicar el frontend compilado, configura el servidor web para resolver las rutas de React hacia `index.html` y reenviar `/api`, `/sanctum` y `/storage` a Laravel. El proxy de Vite es solo para desarrollo y la previsualización local.
 
-Referencias: [sesiones SPA de Sanctum](https://laravel.com/docs/12.x/sanctum#spa-authentication), [proxy de Vite](https://vite.dev/config/server-options.html#server-proxy), [Jikan REST API v4](https://docs.api.jikan.moe/), [Kitsu API](https://kitsu.docs.apiary.io/).
+Referencias: [sesiones SPA de Sanctum](https://laravel.com/docs/12.x/sanctum#spa-authentication), [proxy de Vite](https://vite.dev/config/server-options.html#server-proxy), [Jikan REST API v4](https://docs.api.jikan.moe/), [Kitsu API](https://kitsu.docs.apiary.io/), [Laravel Eloquent Relationships](https://laravel.com/docs/12.x/eloquent-relationships).
